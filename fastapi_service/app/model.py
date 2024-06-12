@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import yaml
 import json
+import traceback
 from transformers import pipeline
 from typing import List, Dict, Any
 
@@ -17,8 +18,9 @@ VERSION_MODEL = "latest"
 class AutoencoderModelPrediction:
     """Class representing a sentiment prediction result."""
 
-    mse: float
-    rmse: float
+    mse: float | str = "None value"
+    rmse: float | str = "None value"
+    error: str = "No Error"
 
 
 def load_autoencoder_model():
@@ -35,8 +37,13 @@ def load_autoencoder_model():
 
         prep_class = PrepData()
 
-        numpy_from_data = prep_class.json_to_numpy(data_dict)
-        predict_data = model_class.start_predict_model(model_hf, numpy_from_data)
+        try:
+            numpy_from_data = prep_class.json_to_numpy(data_dict)
+            predict_data = model_class.start_predict_model(model_hf, numpy_from_data)
+        except Exception:
+            return AutoencoderModelPrediction(
+                error=f"ERROR: data_dict ({data_dict}) caused an error - {traceback.format_exc()}"
+            )
         
 
         mse_rmse_res: Dict[str, Any] = model_class.start_active_validate(predict_data, numpy_from_data)

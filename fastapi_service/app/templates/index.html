@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="ru">
-    <head>
-        <title>Загрузка Json</title>
-    </head>
-    <body>
-        <form method="post" action="/upload_json/"  enctype="multipart/form-data">
-            <p>Выберите файл: </p>
-            <input type="file" id="file_upload" name="file_upload"><br>
-            <input type="submit" value="Upload">
-        </form>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Json</title>
+    <link href="{{ url_for('static', path='/css/main.css') }}" rel="stylesheet">
+</head>
+<body>
+    <p>Input json like object</p>
+    <form method="post" action="/predict/"  enctype="">
+        <div class="text_form">
+            <p><textarea id="json_text" name="json_text"></textarea></p>
+        </div>
+        <input type="submit" value="send">
+    </form>
+</body>
 </html>

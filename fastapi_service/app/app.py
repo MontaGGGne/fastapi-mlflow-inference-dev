@@ -1,7 +1,9 @@
-from fastapi import FastAPI, UploadFile, Request
+from fastapi import FastAPI, UploadFile, Request, Body, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
+from pathlib import Path
 from typing import List, Dict, Any
 import base64
 import json
@@ -14,64 +16,66 @@ model = None
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 # app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount(
+    "/static",
+    StaticFiles(directory=Path(__file__).parent.absolute() / "static"),
+    name="static",
+)
 
 
 class AutoencoderModelResponse(BaseModel):
-    mse: float
-    rmse: float
+    mse: float | str
+    rmse: float | str
+    error: str = "None error"
 
 
-# create a route
-# @app.get("/")
-# def index():
-#     return {"text": "Sentiment Analysis"}
+# class JsonTyping():
 
 
-# Register the function to run during startup
+
 @app.on_event("startup")
 def startup_event():
     global model
     model = load_autoencoder_model()
 
 
-# # Your FastAPI route handlers go here
-# @app.get("/predict")
-# def predict_sentiment(text: str):
-#     sentiment = model(text)
-
-#     response = SentimentResponse(
-#         text=text,
-#         sentiment_label=sentiment.label,
-#         sentiment_score=sentiment.score,
-#     )
-
-#     return response
-
-
 @app.get("/")
-def main(request: Request):
+async def main(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.post("/upload_json/")
-def create_upload_json(request: Request, file_upload: UploadFile):
+@app.post("/predict/")
+# def create_upload_json(json_text: Any = Body(None)):
+# async def create_upload_json(json_text = Body(...)):
+async def create_upload_json(json_text: str = Form(...)):
+    # dec_payload = json_text.decode('utf-8')
     try:
-        json_bytes = file_upload.file.read()
-        dict_from_json: List[Dict[str, Any]] = json.loads(json_bytes.decode('utf-8'))  
+        # payload
+        # json_bytes = upload.file.read()
+        # dec_payload = json_text.decode('utf-8')
+        dict_from_json: List[Dict[str, Any]] = json.loads(json_text)
+        # dict_from_json: List[Dict[str, Any]] = upload
     except Exception:
-        return {"message": f"There was an error uploading the file - {traceback.format_exc()}"}
+        return {"message": f"traceback - {traceback.format_exc()}",
+                "dec_payload": json_text}
+    
+    # return dict_from_json
     
     response_model = model(dict_from_json)
 
     response = AutoencoderModelResponse(
         mse=response_model.mse,
-        rmse=response_model.rmse
+        rmse=response_model.rmse,
+        error=response_model.error
     )
 
-    return templates.TemplateResponse("display.html",
-                                      {"request": request,
-                                       "mse": response.mse,
-                                       "rmse": response.rmse})
+    # return templates.TemplateResponse("display.html",
+    #                                   {"request": request,
+    #                                    "mse": response.mse,
+    #                                    "rmse": response.rmse})
+    return {"mse": response.mse,
+            "rmse": response.rmse,
+            "error": response.error}
 
 
 # @app.post("/upload_json/")
