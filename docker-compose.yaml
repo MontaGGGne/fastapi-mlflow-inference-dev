@@ -3,9 +3,10 @@ version: "3"
 services:   
   fastapi:
     build:
-        context: ./fastapi_service
-        dockerfile: ./Dockerfile
-    container_name: rmq_producer_2
+        context: .
+        dockerfile: ./fastapi_service/Dockerfile
+    environment:
+      - TOKEN=${TOKEN}
     ports:
       - 80:80
     restart: always

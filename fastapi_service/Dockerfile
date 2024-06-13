@@ -1,12 +1,19 @@
-FROM python:3.11
+FROM python:3.10
 
-COPY requirements.txt requirements-dev.txt setup.py /workdir/
-COPY app/ /workdir/app/
-COPY ml/ /workdir/ml/
+COPY fastapi_service/requirements.txt fastapi_service/setup.py /workdir/
+COPY fastapi_service/app/ /workdir/app/
+COPY fastapi_service/ml/ /workdir/ml/
 
 WORKDIR /workdir
 
 RUN pip install -U -e .
+
+COPY for_pip_install/* /workdir/
+RUN pip install ./train_and_valid_model-0.2.15-py3-none-any.whl
+RUN pip install ./preprocess_data-0.1.9-py3-none-any.whl
+
+RUN export MLFLOW_TRACKING_USERNAME="Dimitriy200"
+RUN export MLFLOW_TRACKING_PASSWORD="RamZaZ3961%"
 
 # Run the application
 CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "80"]

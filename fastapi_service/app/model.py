@@ -1,9 +1,5 @@
 from dataclasses import dataclass
-from pathlib import Path
-import yaml
-import json
 import traceback
-from transformers import pipeline
 from typing import List, Dict, Any
 
 from train.train import Autoencoder_Model
@@ -23,17 +19,17 @@ class AutoencoderModelPrediction:
     error: str = "No Error"
 
 
-def load_autoencoder_model():
+async def load_autoencoder_model():
     """Load a pre-trained sentiment analysis model.
 
     Returns:
         model (function): A function that takes a text input and returns a SentimentPrediction object.
     """
 
-    model_class = Autoencoder_Model()
+    model_class: Autoencoder_Model = await Autoencoder_Model()
     model_hf = model_class.load_model_from_MlFlow(token="ggg")
 
-    def model(data_dict: List[Dict[str, Any]]) -> AutoencoderModelPrediction:
+    async def model(data_dict: List[Dict[str, Any]]) -> AutoencoderModelPrediction:
 
         prep_class = PrepData()
 
@@ -53,4 +49,4 @@ def load_autoencoder_model():
             rmse=mse_rmse_res['RMSE'],
         )
 
-    return model
+    return await model
