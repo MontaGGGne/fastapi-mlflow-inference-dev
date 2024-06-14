@@ -11,13 +11,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-URI = "https://dagshub.com/Dimitriy200/"
-NAME_MODEL = "autoencoder2"
-VERSION_MODEL = "latest"
+USER = os.environ.get('USER')
+PASSWORD = os.environ.get('PASSWORD')
 TOKEN = os.environ.get('TOKEN')
-TOKEN_USER = "Dimitriy200"
-TOKEN_PASSWORD = "RamZaZ3961%"
-
+URI = os.environ.get('URI')
+NAME_MODEL = os.environ.get('NAME_MODEL')
+VERSION_MODEL = os.environ.get('VERSION_MODEL')
 
 
 @dataclass
@@ -43,7 +42,7 @@ def load_autoencoder_model():
         raise
     try:
         logging.info(f"Waiting get model ...")
-        model_hf = model_class.load_model_from_MlFlow(dagshub_toc_username=TOKEN_USER, dagshub_toc_pass=TOKEN, dagshub_toc_tocen=TOKEN)
+        model_hf = model_class.load_model_from_MlFlow(dagshub_toc_username=USER, dagshub_toc_pass=TOKEN, dagshub_toc_tocen=TOKEN)
         logging.info(f"Success get MODEL")
     except Exception:
         logging.error(f"Get MODEL error - {traceback.format_exc()}")

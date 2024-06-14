@@ -6,7 +6,12 @@ services:
         context: .
         dockerfile: ./fastapi_service/Dockerfile
     environment:
-      - TOKEN=${TOKEN}
+      - USER=${DAGSHUB_USER}
+      - PASSWORD=${DAGSHUB_PASSWORD}
+      - TOKEN=${DAGSHUB_TOKEN}
+      - URI=${DAGSHUB_URI}
+      - NAME_MODEL=${DAGSHUB_NAME_MODEL}
+      - VERSION_MODEL=${DAGSHUB_VERSION_MODEL}
     ports:
       - 80:80
     restart: always
