@@ -11,10 +11,9 @@ from ml.model import load_autoencoder_model
 model = None
 app = FastAPI()
 
-
 class AutoencoderModelResponse(BaseModel):
     test_data: List[Dict[str, Any]] | str = "None value"
-    predict: dict | str = "None value"
+    dict_with_predict: dict | str = "None value"
     error: str = "None error"
 
 
@@ -25,7 +24,7 @@ async def startup_event():
 
 
 @app.post("/predict/")
-async def create_upload_json(request: Request):
+async def predict_upload_json(request: Request):
     req_bytes = await request.body()
     json_str = req_bytes.decode('utf-8')
     try:
@@ -38,7 +37,7 @@ async def create_upload_json(request: Request):
 
     response = AutoencoderModelResponse(
         test_data=dict_from_json,
-        predict=response_model.dict_with_predict,
+        dict_with_predict=response_model.dict_with_predict,
         error=response_model.error
     )
 
