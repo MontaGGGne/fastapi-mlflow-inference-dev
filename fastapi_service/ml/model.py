@@ -51,8 +51,8 @@ def load_autoencoder_model():
         units_uniq_list = sorted(list(set(units_list)))
         try:
             numpy_from_data = prep_class.json_to_numpy(data_dict)
-            # pipe_line_data = prep_class.employ_Pipline(numpy_from_data)
-            predict_data = model_class.start_predict_model(model_hf, numpy_from_data)
+            pipe_line_data = prep_class.employ_Pipline(numpy_from_data)
+            predict_data = model_class.start_predict_model(model_hf, pipe_line_data)
         except Exception:
             return AutoencoderModelPrediction(
                 error=f"ERROR: data_dict ({data_dict}) caused an error - {traceback.format_exc()}"
